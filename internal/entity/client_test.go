@@ -19,7 +19,7 @@ func TestCreateNewClientWhenNameIsInvalid(t *testing.T) {
 	client, err := NewClient("", "john@doe.com")
 
 	assert.NotNil(t, err)
-	assert.Error(t, err, "name is required")
+	assert.EqualError(t, err, "name is required")
 	assert.Nil(t, client)
 }
 
@@ -27,7 +27,7 @@ func TestCreateNewClientWhenEmailIsInvalid(t *testing.T) {
 	client, err := NewClient("John Doe", "")
 
 	assert.NotNil(t, err)
-	assert.Error(t, err, "email is required")
+	assert.EqualError(t, err, "email is required")
 	assert.Nil(t, client)
 }
 
@@ -45,7 +45,7 @@ func TestUpdateClientWithInvalidArgs(t *testing.T) {
 	err := client.Update("", "j@doe.com")
 
 	assert.NotNil(t, err)
-	assert.Error(t, err, "name is required")
+	assert.EqualError(t, err, "name is required")
 }
 
 func TestAddAccountToClient(t *testing.T) {
@@ -60,12 +60,12 @@ func TestAddAccountToClient(t *testing.T) {
 
 func TestAddAccountToAnotherClient(t *testing.T) {
 	client, _ := NewClient("John Doe", "john@doe.com")
-	client2, _ := NewClient("John Doe", "john@doe.com")
+	client2, _ := NewClient("Mary Doe", "mary@doe.com")
 	account, _ := NewAccount(client)
 
 	err := client2.AddAccount(account)
 
 	assert.NotNil(t, err)
-	assert.Error(t, err, "account does not belong to client")
+	assert.EqualError(t, err, "account does not belong to client")
 	assert.Equal(t, 0, len(client2.Accounts))
 }

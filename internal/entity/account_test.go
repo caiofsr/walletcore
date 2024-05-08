@@ -18,7 +18,7 @@ func TestCreateNewAccountWithNilClient(t *testing.T) {
 	account, err := NewAccount(nil)
 
 	assert.NotNil(t, err)
-	assert.Error(t, err, "client is required")
+	assert.EqualError(t, err, "client is required")
 	assert.Nil(t, account)
 }
 
