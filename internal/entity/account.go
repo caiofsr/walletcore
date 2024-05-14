@@ -9,6 +9,7 @@ import (
 
 type Account struct {
 	ID        string
+	ClientID  string
 	Client    *Client
 	Balance   float64
 	CreatedAt time.Time
