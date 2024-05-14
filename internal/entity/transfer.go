@@ -12,7 +12,7 @@ type Transfer struct {
 	AccountFrom *Account
 	AccountTo   *Account
 	Amount      float64
-	CreateAt    time.Time
+	CreatedAt   time.Time
 }
 
 func NewTransfer(accountFrom, accountTo *Account, amount float64) (*Transfer, error) {
@@ -21,7 +21,7 @@ func NewTransfer(accountFrom, accountTo *Account, amount float64) (*Transfer, er
 		AccountFrom: accountFrom,
 		AccountTo:   accountTo,
 		Amount:      amount,
-		CreateAt:    time.Now(),
+		CreatedAt:   time.Now(),
 	}
 
 	err := transfer.Validate()
