@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/caiofsr/walletcore/internal/entity"
+	"github.com/caiofsr/walletcore/internal/event"
+	"github.com/caiofsr/walletcore/pkg/events"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -33,13 +35,16 @@ func TestCreateTransferUseCase_Execute(t *testing.T) {
 	mockTransfer := &TransferGatewayMock{}
 	mockTransfer.On("Create", mock.Anything).Return(nil)
 
+	dispatcher := events.NewEventDispatcher()
+	event := event.NewTransferCreated()
+
 	inputDTO := CreateTransferInputDTO{
 		AccountIDFrom: account1.ID,
 		AccountIDTo:   account2.ID,
 		Amount:        float64(100),
 	}
 
-	uc := NewCreateTransferUseCase(mockTransfer, mockAccount)
+	uc := NewCreateTransferUseCase(mockTransfer, mockAccount, dispatcher, event)
 	output, err := uc.Execute(inputDTO)
 	assert.Nil(t, err)
 	assert.NotNil(t, output)

@@ -3,6 +3,7 @@ package usecases
 import (
 	"github.com/caiofsr/walletcore/internal/entity"
 	"github.com/caiofsr/walletcore/internal/gateway"
+	"github.com/caiofsr/walletcore/pkg/events"
 )
 
 type CreateTransferInputDTO struct {
@@ -18,12 +19,21 @@ type CreateTransferOutputDTO struct {
 type CreateTransferUseCase struct {
 	TransferGateway gateway.TransferGateway
 	AccountGateway  gateway.AccountGateway
+	EventDispatcher events.EventDispatcherInterface
+	TransferCreated events.EventInterface
 }
 
-func NewCreateTransferUseCase(tg gateway.TransferGateway, ag gateway.AccountGateway) *CreateTransferUseCase {
+func NewCreateTransferUseCase(
+	tg gateway.TransferGateway,
+	ag gateway.AccountGateway,
+	ed events.EventDispatcherInterface,
+	transferCreated events.EventInterface,
+) *CreateTransferUseCase {
 	return &CreateTransferUseCase{
 		TransferGateway: tg,
 		AccountGateway:  ag,
+		EventDispatcher: ed,
+		TransferCreated: transferCreated,
 	}
 }
 
@@ -48,5 +58,10 @@ func (uc *CreateTransferUseCase) Execute(input CreateTransferInputDTO) (*CreateT
 		return nil, err
 	}
 
-	return &CreateTransferOutputDTO{ID: transfer.ID}, nil
+	output := &CreateTransferOutputDTO{ID: transfer.ID}
+
+	uc.TransferCreated.SetPayload(output)
+	uc.EventDispatcher.Dispatch(uc.TransferCreated)
+
+	return output, nil
 }
