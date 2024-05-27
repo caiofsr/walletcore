@@ -1,0 +1,27 @@
+POST http://localhost:3333/clients HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "janedoe@example.com"
+}
+
+###
+
+POST http://localhost:3333/accounts HTTP/1.1
+Content-Type: application/json
+
+{
+  "client_id": "06e37add-de0b-48d3-991a-5c9501b281f5"
+}
+
+###
+
+POST http://localhost:3333/transfers HTTP/1.1
+Content-Type: application/json
+
+{
+  "account_id_from": "502efcda-ab65-426d-b538-12402186398c",
+  "account_id_to": "dff61d60-d15c-4112-b27b-79d9106ec269",
+  "amount": 10
+}
