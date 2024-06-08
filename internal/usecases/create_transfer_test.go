@@ -1,10 +1,12 @@
 package usecases
 
 import (
+	"context"
 	"testing"
 
 	"github.com/caiofsr/walletcore/internal/entity"
 	"github.com/caiofsr/walletcore/internal/event"
+	"github.com/caiofsr/walletcore/internal/usecases/mocks"
 	"github.com/caiofsr/walletcore/pkg/events"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -28,15 +30,12 @@ func TestCreateTransferUseCase_Execute(t *testing.T) {
 	account2, _ := entity.NewAccount(client2)
 	account2.Credit(1000)
 
-	mockAccount := &AccountGatewayMock{}
-	mockAccount.On("FindByID", account1.ID).Return(account1, nil)
-	mockAccount.On("FindByID", account2.ID).Return(account2, nil)
-
-	mockTransfer := &TransferGatewayMock{}
-	mockTransfer.On("Create", mock.Anything).Return(nil)
+	mockUow := &mocks.UowMock{}
+	mockUow.On("Do", mock.Anything, mock.Anything).Return(nil)
 
 	dispatcher := events.NewEventDispatcher()
 	event := event.NewTransferCreated()
+	ctx := context.Background()
 
 	inputDTO := CreateTransferInputDTO{
 		AccountIDFrom: account1.ID,
@@ -44,10 +43,10 @@ func TestCreateTransferUseCase_Execute(t *testing.T) {
 		Amount:        float64(100),
 	}
 
-	uc := NewCreateTransferUseCase(mockTransfer, mockAccount, dispatcher, event)
-	output, err := uc.Execute(inputDTO)
+	uc := NewCreateTransferUseCase(mockUow, dispatcher, event)
+	output, err := uc.Execute(ctx, inputDTO)
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	mockTransfer.AssertExpectations(t)
-	mockTransfer.AssertNumberOfCalls(t, "Create", 1)
+	mockUow.AssertExpectations(t)
+	mockUow.AssertNumberOfCalls(t, "Do", 1)
 }

@@ -4,30 +4,17 @@ import (
 	"testing"
 
 	"github.com/caiofsr/walletcore/internal/entity"
+	"github.com/caiofsr/walletcore/internal/usecases/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-type AccountGatewayMock struct {
-	mock.Mock
-}
-
-func (m *AccountGatewayMock) Save(account *entity.Account) error {
-	args := m.Called(account)
-	return args.Error(0)
-}
-
-func (m *AccountGatewayMock) FindByID(id string) (*entity.Account, error) {
-	args := m.Called(id)
-	return args.Get(0).(*entity.Account), args.Error(1)
-}
 
 func TestCreateAccountUseCase_Execute(t *testing.T) {
 	client, _ := entity.NewClient("John Doe", "john@doe.com")
 	clientMock := &ClientGatewayMock{}
 	clientMock.On("Get", client.ID).Return(client, nil)
 
-	accountMock := &AccountGatewayMock{}
+	accountMock := &mocks.AccountGatewayMock{}
 	accountMock.On("Save", mock.Anything).Return(nil)
 
 	uc := NewCreateAccountUseCase(accountMock, clientMock)
